@@ -71,14 +71,15 @@ To create an Auto scale instance template for the virtual server instance, compl
 
     e. Select the appropriate image for **Image**.
 
-    If you select a stock image, you must do post-provisioning for the new virtual server instances to match the same functions as your current production web        server. If you select a custom image (for example, snapshot of the web server), you might have minimal or no post-provisioning.
-    {: note}
+        If you select a stock image, you must do post-provisioning for the new virtual server instances to match the same functions as your current production web        server. If you select a custom image (for example, snapshot of the web server), you might have minimal or no post-provisioning.
+        {: note}
 
     f. Select *jumphost-vsi* for the **SSH key**.
+
     g. For **Network interface**:
 
-    * Select *vpc-region1-zone1-subnet* as the **Subnet**.
-    * Ensure *vpc-region1-webserver-sg* is the only item that is selected in **Security Groups**.
+        * Select *vpc-region1-zone1-subnet* as the **Subnet**.
+        * Ensure *vpc-region1-webserver-sg* is the only item that is selected in **Security Groups**.
 
 4.	Click **Create instance template**.
 
@@ -104,24 +105,24 @@ To create the Auto scale instance groups, complete the following steps:
 
     f. For **Select subnets and load balancer**:
 
-    * Select *vpc-region1-zone1-subnet* for the **Subnet**.
-    * Check **Use load balancer**.
+        * Select *vpc-region1-zone1-subnet* for the **Subnet**.
+        * Check **Use load balancer**.
 
-        Selecting the **Use load balancer** option, enables the backend orchestration to add newly created virtual server instances to the backend server pool. When enabled, the backend orchestration informs the load balancer about any virtual servers that are created by the Auto scale feature and adds any created virtual servers to the backend pool servers. This selection is optional.
-        {: note}
+            Selecting the **Use load balancer** option, enables the backend orchestration to add newly created virtual server instances to the backend server pool. When enabled, the backend orchestration informs the load balancer about any virtual servers that are created by the Auto scale feature and adds any created virtual servers to the backend pool servers. This selection is optional.
+            {: note}
 
-    * Select *vpc-lb-region1-zone1* for **Load Balancer**.
-    * Select *region1-zone1-pool* for **Pool**.
-    *	Enter the appropriate network port for **Application port**, *80* for HTTP or *443* for HTTPs.
+        * Select *vpc-lb-region1-zone1* for **Load Balancer**.
+        * Select *region1-zone1-pool* for **Pool**.
+        * Enter the appropriate network port for **Application port**, *80* for HTTP or *443* for HTTPs.
 
     g. Select *Dynamic* for **Choose scaling method**.
 
     h. For **Set instance group size**:
 
-    *	Enter *1* for **Minimum instances**
-    *	Enter *3* for **Maximum instances**
-    *	Enter *90* for **Aggregation window**
-    *	Enter *120* for **Cooldown period**
+        *	Enter *1* for **Minimum instances**
+        *	Enter *3* for **Maximum instances**
+        *	Enter *90* for **Aggregation window**
+        *	Enter *120* for **Cooldown period**
 
         The minimum and maximum instance is the total of all instances (of current plus Auto scaled instances). In our case, since we only started with 1, then the minimum is 1. Also, when you are choosing the maximum number, make sure that the subnet has enough spare IP addresses to accommodate any new provisioned virtual server instances that are created by the Auto scale feature.
         {: tip}
