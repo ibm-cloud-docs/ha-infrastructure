@@ -1,12 +1,11 @@
 ---
-
 copyright:
   years:  2022
 lastupdated: "2022-7-19"
 
-keywords: cvad release notes
+keywords: high availability release notes
 
-subcollection: cvad
+subcollection: ha-infrastructure
 
 content-type: release-note
 
