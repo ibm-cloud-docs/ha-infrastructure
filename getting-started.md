@@ -55,4 +55,4 @@ Create or retrieve your [SSH key name](/docs/ssh-keys?topic=ssh-keys-getting-sta
 ## Next steps
 {: #nextsteps1}
 
-To continue, see [High Availability and Resiliency on {{site.data.keyword.cloud_notm}}](/docs/ha-infrastructure/ha-infrastructure?topic=landing-about-ha-dr-backup).
+To continue, see [High Availability and Resiliency on {{site.data.keyword.cloud_notm}}](/docs/ha-infrastructure?topic=landing-about-ha-dr-backup).
