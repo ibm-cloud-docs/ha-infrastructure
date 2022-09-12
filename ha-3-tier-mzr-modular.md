@@ -45,10 +45,9 @@ Catalog tile and Schematics instructions are both located in the UI tab of this 
 
 For Terraform and Schematics deployments, the components in a multi-zone region 3-tier infrastructure are divided into modules so that you can customize your infrastructure to your needs. You receive all of the core components and can turn feature components on or off as needed. Modules are not available for the Catalog tile deployment.
 
-|Module    |   Resources   |
+|Feature    |   Resources   |
 |-----------|-------------|
-|Core     | Resources needed for a multi-zone region infrastructure. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - ALB LBaaS  \n - web VSI + host placement groups  \n - Private LBaaS  \n - App VSI + host placement groups  \n -  DB VSI + secondary block volumes + power placement groups|
-|Feature modules   | The optional features for a multi-zone region infrastructure.  You can select as many as you need.  \n - Instance group  \n - VPN  \n - Public Gateway  \n - File  \n - Cloud Object Storage  \n - Public or Private (web LBaaS)|
+|Core     | Resources needed for a multi-zone region infrastructure. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - ALB LBaaS  \n - web VSI + host placement groups  \n - Private LBaaS  \n - App VSI + host placement groups  \n -  DB VSI + secondary block volumes + power placement groups  \n - Instance group  \n - VPN  \n - Public Gateway  \n - File  \n - Cloud Object Storage  \n - Public or Private (web LBaaS)|
 
 ## What is created
 {: #created-vpc-ha-resilient-mzr-modular}
@@ -111,7 +110,7 @@ Don’t delete the bastion server or update its OS image after creation (**Apply
     * Enter a name for the workspace.
     * Select a **Resource group**.
     * Select a **Location** for your workspace. The workspace location does not have to match the resource location.
-3.  Set the required deployment variables. Review the input parameters and provide values that match your solution. Some parameters have default values. Individual feature modules ca not be The values that you must specify include:
+3.  Set the required deployment variables. Review the input parameters and provide values that match your solution. Some parameters have default values. The values that you must specify include:
 
     |Component type   | Parameter values needed |
     |-----------------|--------------------|
