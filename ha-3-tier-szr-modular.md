@@ -45,8 +45,8 @@ For Terraform and Schematics deployments, the components in a single availabilit
 
 |Module    |   Resources   |
 |-----------|-------------|
-|Core     | Resources needed for all single availability zone infrastructures. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - App Load balancer (ALB)  \n - web VSI + host placement groups  \n - App VSI + host placement groups  |
-|Features   | The optional features for a single availability zone infrastructure.  You can select as many as you need.  \n - Instance group  \n - VPN  \n - Public Gateway  \n - File  \n - Cloud Object Storage  \n - Public or Private (web LBaaS)|
+|Core     | Resources needed for all single availability zone infrastructures. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - App Load balancer (ALB)  \n - web VSI + host placement groups  \n - App VSI + host placement groups   \n - Instance group   \n - Public Gateway   \n - Public or Private (web LBaaS)|
+|Features   | The optional features for a single availability zone infrastructure.  You can select as many as you need.   \n - File  |
 
 ## What is created
 {: #created-vpc-ha-resilient-saz-modular}
@@ -66,14 +66,6 @@ A VPC is a private space in IBM Cloud where you can run an isolated environment 
 
 The scripts use variables to specify your account information, VSI server information, Load Balancer information, Auto scale, and Anti-Affinity
 
-The scripts automatically install these software packages:
-
-*  PHP
-*  Apache
-*  Maria DB
-*  Word Press Application
-
-
 ## Caveats
 {: #limitations-ha-resilient-saz-modular}
 
@@ -85,11 +77,11 @@ Don’t delete the bastion server or update its OS image after creation (**Apply
 ## Before you begin
 {: #before-begin-ha-resilient-saz-modular}
 
-*   If Terraform is not installed on your machine, [Install the Terraform CLI and the {{site.data.keyword.cloud_notm}} Provider plug-in](/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-setup_cli). The minimum Terraform version required is v0.14. You also need to install any software that your operating system requires for Terraform, for example Homebrew for Macs. {: terraform}
+*   If Terraform is not installed on your machine, [Install the Terraform CLI and the {{site.data.keyword.cloud_notm}} Provider plug-in](/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-setup_cli). The minimum Terraform version that is required is v0.14. You also need to install any software that your operating system requires for Terraform, for example Homebrew for Macs. {: terraform}
 *   [Create or retrieve an {{site.data.keyword.cloud_notm}} API key](/docs/account?topic=account-userapikey#create_user_key). The API key is used to authenticate with the IBM Cloud platform and to determine your permissions for IBM Cloud services.
 *   If you do not know your resource group ID, go to **Manage > Account > Resource Groups** and locate the resource group ID.
 *   [Create or retrieve your SSH key name](/docs/ssh-keys?topic=ssh-keys-getting-started-tutorial). The SSH key is used to SSH to the bastion server.
-*   Collect the information that you need to specify for the script parameters:
+*   Collect the general information that you need to specify for the script parameters:
 
     |Component type   | Parameter values needed |
     |-----------------|--------------------|
@@ -99,26 +91,59 @@ Don’t delete the bastion server or update its OS image after creation (**Apply
     |Image to use for region VSIs |  - Bastion Server  \n - App Server  \n - Web Server  \n Images are region-specific. To find the image IDs for your region, open the {{site.data.keyword.cloud_notm}} shell and enter `ibmcloud target -r < region_name >` to set your region, then `ibmcloud is images` to see a list of images for that region.|
     |Auto scale App VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
     |Auto scale web VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
-    |Anti-Affinity VSI parameters  | - App and Web - Host spread |
+    |Anti-Affinity VSI parameters  | - app and web - Host spread |
 
-*   For VPN module validation, you need to create an [on-premises-VPN](https://cloud.ibm.com/vpc-ext/network/vpngateways). When you create the VPN, make note of these parameters, you need this information to run the Terraform scripts:
-    * vpn_mode = Possible values are policy and route, by default it will be policy.
-    * preshared_key = The Key configured on the peer gateway.
-    * peer_cidrs = List of peer CIDRs for the creation of VPN connection.
-    * peer_gateway_ip = The IP address of the peer VPN gateway
+*   For DBaaS configuration, you modify parameters in two different files, one for required variables and one for optional parameters:  {: terraform}
+    *   DBaaS information entered in the user inputs file includes:
+        - enable_dbaas - true or false, whether to enable DBaaS or use virtual server instance db
+        - Admin password - minimum 10 characters, A-Z, a-z, 0-9, password is used for virtual server instance db and DBaaS 
+        - (DBaaS only) The DB endpoint access - either 'private', 'public' or 'public-and-private' (for mysql databases), default is 'private'
+        - (DBaaS only) Whether to enable auto-scaling in DBaaS - true or false, default is false
+    *   DBaaS has optional variables in the database variables file, that you can modify for your solution:
 
-    It is not possible to connect to a VPN gateway through a VPC, so creating an on-premises-VPN helps in connecting to the VPN gateway which we create using the code.
-    {: note}
-    {: terraform}
+        |Parameter | Description|
+        |-------|--------|
+        |service | The type of Cloud Databases that you want to create. Example: databases-for-mysql, databases-for-mongodb|
+        |plan | The name of the service plan that you choose for your instance. All databases use standard. enterprise is supported only for cassandra (databases-for-cassandra) and mongodb(databases-for-mongodb)|
+        |version | The version of the database to be provisioned. If omitted, the database is created with the most recent major and minor version. (For MySQL, 5.7 is the version that is supported)|
+        |members_memory_allocation_mb | The amount of memory in megabytes for the database, allocated per-member. Member group memory must be >= 1024 and <= 114688 in increments of 128. If not specified, the default setting of the database service is used, which can vary by database type.|
+        |members_disk_allocation_mb | The amount of disk space for the database, allocated per member. Member group disk must be >= 20480 and <= 4194304 in increments of 1024.If not specified, the default setting of the database service is used, which can vary by database type.|
+        |members_cpu_allocation_count | Enables and allocates dedicated CPU per-member to your deployment. Member group cpu must be >= 3 and <= 28 in increments of 1.|
+        |users | A list of users that you want to create on the database. Multiple blocks are allowed.|
+        ||Nested scheme for users:|
+        ||name - The user ID to add to the database instance. The user ID must be in the range 5 - 32 characters.
+        ||password - The password for the user ID. The password must be in the range 10 - 32 characters
+        ||auto_scaling - Configure rules to allow your database to automatically increase its resources. Single block of autoscaling is allowed immediately.
+        |Nested scheme for auto_scaling:||
+        |        |Nested scheme for disk:|
+        |          |- capacity_enabled - Auto scaling scalar enables or disables the scalar capacity.|
+        |          |- free_space_less_than_percent - Auto scaling scalar capacity free space less than percent.|
+        |           |- io_above_percent - Auto scaling scalar I/O utilization above percent. -> [Average Memory utilization]|
+        |           |- io_over_period - Auto scaling scalar I/O utilization over period. -> [Average Disk IO utilization for this period]|
+        |           |- io_enabled - Auto scaling scalar I/O utilization enabled.|
+        |           |- rate_increase_percent - Auto scaling rate increase percent. -> [Scale up by rate_increase_percent]|
+        |           |- rate_limit_mb_per_member - Auto scaling rate limit in megabytes per member.-> [Scale up by rate_increase_percent |every rate_period_seconds up to a limit of rate_limit_mb_per_member ]|
+        |           |- rate_period_seconds - Auto scaling rate period in seconds. -> [Scale up by rate_increase_percent every rate_period_seconds]|
+        |           |- rate_units - Auto scaling rate in units|
+        |       |Nested scheme for memory:|
+        |           |- io_above_percent - Auto scaling scalar I/O utilization above percent. -> [Average IO utilization]|
+        |           |- io_enabled- Auto scaling scalar I/O utilization enabled.|
+        |           |- io_over_period - Auto scaling scalar I/O utilization over period. ->[Average IO utilization for this period]|
+        |           |- rate_increase_percent - Auto scaling rate in increase percent. -> [Scale up by rate_increase_percent]|
+        |           |- rate_limit_mb_per_member - Auto scaling rate limit in megabytes per member. [Scale up by rate_increase_percent every rate_period_seconds up to rate_limit_mb_per_member]|
+        |           |- rate_period_seconds - Auto scaling rate period in seconds. -> [Scale up by rate_increase_percent every |rate_period_seconds]|
+        |           |- rate_units - Auto scaling rate in units.|
+        |tags |A list of tags that you want to add to your instance.|
+        |whitelist | A list of allowed IP addresses for the database. Multiple blocks are allowed.Nested scheme for whitelist:|
+        ||- address - The IP address or range of database client addresses to be whitelisted in CIDR format.|
+        ||-description - A description for the allowed IP addresses range.|
+        |backup_id |The CRN of a backup resource to restore from. The backup is created by a database deployment with the same service ID. The backup is loaded after provisioning and the new deployment starts up that uses that data.|
+        |backup_encryption_key_crn | The CRN of a key protect key, that you want to use for encrypting disk that holds deployment backups.|
+        |key_protect_key | The root key CRN of a Key Management Services like Key Protect or Hyper Protect Crypto Service (HPCS) that you want to use for disk encryption.|
+        |key_protect_instance | The instance CRN of a Key Management Services like Key Protect or Hyper Protect Crypto Service (HPCS) that you want to use for disk encryption.|
+        |remote_leader_id | A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication.|
 
-*   For DBaaS configuration, you need to edit several files, in addition to the variables file:
-    *  Required DBaaS information includes:
-        - Admin password - minimum 10 characters, A-Z, a-z, 0-9 
-        - The DB endpoint access - either 'private', 'public' or 'public-and-private' (for mysql databases) 
-        - Whether to enable auto-scaling in DBaaS - true or false 
-    *  There are also optional variables listed and decribed in the variables file that you can modify for your solution. 
-
-*   For file share configuration, you specify information for the file share and its replica:  {: ui}
+*   (Optional) For file share configuration, you specify information for the file share and the file share replica:  {: ui}
     *   share_size - size of the file share, min 10 GB max 3200 GB
     *   share_profile - profile for the file share, either tier-3iops, tier-5iops, or tier-10iops
     *   enableFileShare - whether to enable the file share, either true or false
@@ -149,11 +174,11 @@ Don’t delete the bastion server or update its OS image after creation (**Apply
     |Auto scale App VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
     |Auto scale web VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
     |VSI spread strategy (host or power spread) | - App spread strategy  \n - web spread strategy  \n - Db spread strategy |
-    |File share  |- share_size  \n share_profile  \n enableFileShare  \n replica_zone  \n replica_profile - should match share_profile, either tier-3iops, tier-5iops, or tier-10iops   |
+    |File share  |- share_size  \n - share_profile  \n - enableFileShare  \n - replica_zone  \n - replica_profile: this should match share_profile value, either tier-3iops, tier-5iops, or tier-10iops   |
 
 5.  Accept the license agreement and select **Install**.
 
-    During installation you are redirected to the **Jobs** tab of the Schematics page.  
+    During installation, you are redirected to the **Jobs** tab of the Schematics page.  
 
 If you need to adjust any of your parameters, go to the **Settings** tab of the Schematics page to see all of the parameters that you can modify. After you modify a parameter, select **Apply plan**.
 
@@ -192,8 +217,8 @@ After you have your access token, use Schematics to create your infrastructure.
     |-----------------|--------------------|
     |User-specific information  | - API key  \n - SSH key name. For example, "ibmcloud_ssh_key_name1,ibmcloud_ssh_key_name2,..."  \n - Resource Group  \n - IP address. Enter the IP address in the format: "public_ip_address1/32,public_ip_address2/32,...". For example, "103.42.91.78/32"  \n - Your local machine OS  \n - Prefix to add to resource names |
     |Region  | Regions where resources are deployed  |
-    |OS type for each server  | -Bastion Server  \n - App Server  \n - Web Server  \n - Db Server  |
-    |Image to use for region VSIs |  -Bastion Server  \n - App Server  \n - Web Server  \n - Db Server  |
+    |OS type for each server  | - Bastion Server  \n - App Server  \n - Web Server  \n - Db Server  |
+    |Image to use for region VSIs |  - Bastion Server  \n - App Server  \n - Web Server  \n - Db Server  |
     |Load Balancer | - Domain Name  \n - Region Code  |
     |Auto scale App VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
     |Auto scale web VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
@@ -231,71 +256,30 @@ Use these steps to configure the {{site.data.keyword.cloud_notm}} Provider plug-
     * The zone the resources are created in. For example, us-south-1.
     * For each server, Bastion, app, web, db, you enter the:
         * Custom image ID for the server. 
-        * OS image currently supported is Linux.
+        * OS image that is supported is Linux.
         * The CPU percentage for the App Instance Group
         * The minimum number of servers to have in the App Instance Group.
-        * The maximum nuber of server to have in the App Instance Group.
+        * The maximum number of server to have in the App Instance Group.
         * The bandwidth per second in GB.
-        * The VSI spread strategy for the db server (host or power spread) for anti-affinity. Power spread is recommended here.
+        * The VSI spread strategy for the db server (host or power spread) for anti-affinity. Power spread is recommended.
         * The VSI spread strategy for the web and app servers (host or power spread) for anti-affinity. Host spread is recommended here if more than 4 are created for each server type.
 
 4.  If you are creating a VPN, enter the VPN information in the `user_input.auto.tfvars` file. You need the:
 
-    * VPN mode -  Possible values are policy and route, by default it will be policy.
+    * VPN mode -  Possible values are policy and route, by default it is policy.
     * Preshared key -  The Key configured on the peer gateway.
     * Peer CIDRs - List of peer CIDRs for the creation of VPN connection.
     * Peer gateway IP - The IP address of the peer VPN gateway.
 
-    You must [setup a tunnel](#saz-config-vpn) after the Terraform scripts complete.
+    You must [set up a tunnel](#Configure the VPN (optional)) after the Terraform scripts complete.
     
-5.  If you are using DBaaas, modify the `user_input.auto.tfvars` file in the folder. You must enter:
+5.  If you are using DBaas, modify the `user_input.auto.tfvars` file in the root level folder. You must enter:
+    * enable_dbaas - set to true
     * Admin password - minimum 10 characters, A-Z, a-z, 0-9 
     * The DB endpoint access - either 'private', 'public' or 'public-and-private' (for mysql databases) 
     * Whether to enable auto-scaling in DBaaS - true or false 
 
-6.  If you are using DBaaS, there are additional parameters that you can modify in the root level `db_variables.tf` file.  These variables are set to defaults and can be modified to match your solution:
-
-    |Parameter | Description|
-    |-------|--------|
-    |service | The type of Cloud Databases that you want to create. Example: databases-for-mysql, databases-for-mongodb|
-    |plan | The name of the service plan that you choose for your instance. All databases use standard. enterprise is supported only for cassandra (databases-for-cassandra) and mongodb(databases-for-mongodb)|
-    |db_version | The version of the database to be provisioned. If omitted, the database is created with the most recent major and ||minor version. (For MySQL, 5.7 is the version supported)|
-    |members_memory_allocation_mb | The amount of memory in megabytes for the database, split across all members. If not specified, the default setting of the database service is used, which can vary by database type.|
-    |members_disk_allocation_mb | The amount of disk space for the database, split across all members. If not specified, the default setting of the database service is used, which can vary by database type.|
-    |members_cpu_allocation_count | Enables and allocates the number of specified dedicated cores to your deployment.
-    |users | A list of users that you want to create on the database. Multiple blocks are allowed.|
-    |Nested scheme for users:||
-    ||name - The user ID to add to the database instance. The user ID must be in the range 5 - 32 characters.
-    ||password - The password for the user ID. The password must be in the range 10 - 32 characters
-    ||auto_scaling - Configure rules to allow your database to automatically increase its resources. Single block of autoscaling is allowed at once.
-    |Nested scheme for auto_scaling:||
-    |        |Nested scheme for disk:|
-    |          |- capacity_enabled - Auto scaling scalar enables or disables the scalar capacity.|
-    |          |- free_space_less_than_percent - Auto scaling scalar capacity free space less than percent.|
-    |           |- io_above_percent - Auto scaling scalar I/O utilization above percent. -> [Average Memory utilization]|
-    |           |- io_over_period - Auto scaling scalar I/O utilization over period. -> [Average Disk IO utilization for a this period]|
-    |           |- io_enabled - Auto scaling scalar I/O utilization enabled.|
-    |           |- rate_increase_percent - Auto scaling rate increase percent. -> [Scale up by rate_increase_percent]|
-    |           |- rate_limit_mb_per_member - Auto scaling rate limit in megabytes per member.-> [Scale up by rate_increase_percent |every rate_period_seconds upto a limit of rate_limit_mb_per_member ]|
-    |           |- rate_period_seconds - Auto scaling rate period in seconds. -> [Scale up by rate_increase_percent every rate_period_seconds]|
-    |           |- rate_units - Auto scaling rate in units|
-    |       |Nested scheme for memory:|
-    |           |- io_above_percent - Auto scaling scalar I/O utilization above percent. -> [Average IO utilization]|
-    |           |- io_enabled- Auto scaling scalar I/O utilization enabled.|
-    |           |- io_over_period - Auto scaling scalar I/O utilization over period. ->[Average IO utilization for a this period]|
-    |           |- rate_increase_percent - Auto scaling rate in increase percent. -> [Scale up by rate_increase_percent]|
-    |           |- rate_limit_mb_per_member - Auto scaling rate limit in megabytes per member. [Scale up by rate_increase_percent every rate_period_seconds upto rate_limit_mb_per_member]|
-    |           |- rate_period_seconds - Auto scaling rate period in seconds. -> [Scale up by rate_increase_percent every |rate_period_seconds]|
-    |           |- rate_units - Auto scaling rate in units.|
-    |tags |A list of tags that you want to add to your instance.|
-    |whitelist | A list of allowed IP addresses for the database. Multiple blocks are allowed.Nested scheme for whitelist:|
-    ||- address - The IP address or range of database client addresses to be whitelisted in CIDR format.|
-    ||-description - A description for the allowed IP addresses range.|
-    ||-backup_id - The CRN of a backup resource to restore from. The backup is created by a database deployment with the same service ID. The backup is loaded after provisioning and the new deployment starts up that uses that data.|
-    |backup_encryption_key_crn | The CRN of a key protect key, that you want to use for encrypting disk that holds deployment backups.|
-    |key_protect_key | The root key CRN of a Key Management Services like Key Protect or Hyper Protect Crypto Service (HPCS) that you want to use for disk encryption.|
-    |key_protect_instance | The instance CRN of a Key Management Services like Key Protect or Hyper Protect Crypto Service (HPCS) that you want to use for disk encryption.|
-    |remote_leader_id | A CRN of the leader database to make the replica(read-only) deployment. The leader database is created by a database deployment with the same service ID. A read-only replica is set up to replicate all of your data from the leader deployment to the replica deployment by using asynchronous replication.|
+6.  If you are using DBaaS, you can modify the optional parameters in the root level `db_variables.tf` file.  These variables are set to defaults and can be modified to match your solution:
 
 7.	Initialize the Terraform CLI. 
 
@@ -307,9 +291,9 @@ Use these steps to configure the {{site.data.keyword.cloud_notm}} Provider plug-
 
     The scripts prompt you for information about your resources if you did not specify them in the `userinput.auto.tfvars` file.  
 
-9.	Verify that the plan shows all of the resources that you want to create and that the names and values are correct. If the plan needs to be adjusted, edit the `userinput.auto.tfvars` and `modules .tf` file and run `terraform plan` again.
+9.	Verify that the plan shows all of the resources that you want to create and that the names and values are correct. If the plan needs to be adjusted, edit the `userinput.auto.tfvars` and `modules .tf` files, and run `terraform plan` again.
 
-10.	Run the terraform script by using the below command:
+10.	Run the terraform script by using this command:
 
     `terraform apply`
 
@@ -319,16 +303,16 @@ Use these steps to configure the {{site.data.keyword.cloud_notm}} Provider plug-
 {: #saz-config-vpn}
 {: terraform}
 
-There will be a connection created in [prefix]VPN (status-down). You need to create a connection in the On-premises-VPN to make a tunnel between the two VPNs. 
+A connection is created in [prefix]VPN (status-down). You need to create a connection in the On-premises-VPN to make a tunnel between the two VPNs. 
 
 ### Create the tunnel 
 
-1. Go to on-prem-VPN that you have before running the scripts. Click VPN connection and then **Create**.
+1. Go to on-prem-VPN that you have before you run the scripts. Click VPN connection and then **Create**.
 2. Update these values:
 
    a. VPN connection name : Any unique name
    b. Peer gateway address : saz-vpn Gateway IP
-   c. Preshared key : < password that you created when you created the on-prem VPN >
+   c. Preshared key : < password that you created when you created the on-premises VPN >
    d. Local IBM CIDRs : On-prem-vpn subnet ip-range. 
       Go to the saz-vpn connection, copy the Peer CIDRs value and paste.
    e. Peer CIDRs. : saz-vpn local IBM CIDR. 
@@ -338,20 +322,29 @@ There will be a connection created in [prefix]VPN (status-down). You need to cre
 ### Make the connection active by setting up the Allowlist:
 
 1. Go to **Bastion VSI > Security groups > Rules > Manage rules > Create Inbound rule**. The Inbound rule port range value for both min and max is 22.
-2. After **Allowlisting**, go back to both the connection pages and refresh. Make sure the connections are in the **Active** state.
+2. After **Allowlisting**, go back to both the connection pages and refresh. Make sure that the connections are in the **Active** state.
 
 ### Set SSH Key
 
-Use the `ssh` command, the connection starts from your local machine to on-prem VSI and from on-prem VSI to the bastion VSI.
+Use the `ssh` command, the connection starts from your local machine to on-premises VSI and from on-premises VSI to the bastion VSI.
 
-Your public key is in Bastion, and you need to copy your private key to the on-prem VSI to be able to ssh into the bastion VSI.
+Your public key is in Bastion, and you need to copy your private key to the on-premises VSI to be able to ssh into the bastion VSI.
 {: note}
 
-## Next Steps
+## Next Steps - Terraform
+{: #next-terraform}
 {: terraform}
 
-If you need to rename your resources after they are created, modify the `example.userinput.auto.tfvars` and `modules.tf` file to change the names and run terraform plan and terraform apply again. 
+If you need to rename your resources after they are created, modify the `example.userinput.auto.tfvars` and `modules.tf` files to change the names, and run terraform plan and terraform apply again. 
 
 Do not use the {{site.data.keyword.cloud_notm}} Dashboard and user interface to modify your VPC after it is created. The Terraform scripts create a complete solution and selectively modifying resources with the user interface might cause unexpected results. 
 
 If you need to remove your VPC, use `terraform destroy`. The Bastion server is protected for inadvertent deletion. Before you run the `terraform destroy` command, you need to set the `prevent_destroy` flag to `false` to remove your VPC. The `prevent_destroy` flag is located in `./modules/bastion/compute.tf`.
+
+## Next Steps - Catalog tile
+{: #next-catalog}
+{: ui}
+
+After you create forunfrastructue, you manage your resources with the Schematics workspace.
+
+If you need to remove your file share, use the {{site.data.keyword.cloud_notm}} Dashboard to remove the file share.
