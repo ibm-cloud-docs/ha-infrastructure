@@ -47,12 +47,9 @@ toc:
             topics: 
             - ha-3-tier-resilient-terraform.md
             - ha-3-tier-resilient-autoscale-terraform.md
-            - ha-3-tier-mzr-terraform.md
-            - ha-3-tier-mzr-schematics.md
-            - ha-3-tier-szr-terraform.md
             - ha-3-tier-szr-modular.md
-            - ha-3-tier-cross-mzr-terraform.md
             - ha-3-tier-mzr-modular.md
+            - ha-3-tier-cross-mzr-terraform.md
   - navgroup:
       id: reference
       topics:
