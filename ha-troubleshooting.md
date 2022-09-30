@@ -192,6 +192,39 @@ ssh: connect to host 52.116.124.16 port 22: Operation timed out
 
 You entered the wrong IP address for the Bastion server.  Edit the Bastion IP address.
 
+## Error in function call
+{: #ha-trouble-function-call}
+{: troubleshoot}
+{: support}
+
+During terraform apply, you see an error similar to this:
+
+   ```
+   on fs_variables.tf line 75, in locals:
+   75: zone_check = regex("^${local.zone_intimation}$", (local.replica_zone_check ? local.zone_intimation : (local.replica_zone_check ? local.zone_intimation : "")))
+   ────────────────
+    local.replica_zone_check is false
+    local.zone_intimation is "replica zone is in the same zone"
+
+    Call to function "regex" failed: pattern did not match any part of the given
+    string.
+   ```
+
+or to this message:
+
+   ```
+   on fs_variables.tf line 66, in locals:
+   66: region_check = regex("^${local.region_intimation}$", (local.replica_region_check ? local.region_intimation : ""))
+   ────────────────
+   local.region_intimation is "replica zone is not in the same region"
+   local.replica_region_check is false
+
+   Call to function "regex" failed: pattern did not match any part of the given
+   string.
+   ```
+
+The replica zone provided is the same as the zone for the file share.  The file share and the replica must be in two different zones. Review your parameters and change the zones so that the file share and replica are in different zones. 
+
 ## Invalid value for variable
 {: #ha-trouble-invalid-variable}
 {: troubleshoot}
