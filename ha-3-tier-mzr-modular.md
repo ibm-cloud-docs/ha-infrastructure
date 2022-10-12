@@ -35,9 +35,8 @@ Highly available and resilient infrastructures for multi-zone region include mul
 All infrastructures have a core set of features that are used. With Terraform Schematics, you can customize your infrastructure by adding the features that you want. Features cannot be individually selected with the Catalog tile.
 
 You can select how you want to deploy the architecture:
-*   Use the Catalog - Use the Catalog Tile user interface to enter the information for your infrastructure.
 *   Deploy on {{site.data.keyword.cloud_notm}} - Use the user interface to enter the information for your infrastructure.
-*   Run locally - Download terraform script files to your local machine to configure and run.
+*   Run locally - Download script files to your local machine to configure and run.
 
 Catalog tile and Schematics instructions are both located in the UI tab.
 
@@ -46,10 +45,9 @@ Catalog tile and Schematics instructions are both located in the UI tab.
 
 For Terraform and Schematics deployments, the components in a multi-zone region 3-tier infrastructure are divided into modules so that you can customize your infrastructure to your needs. You receive all of the core components and can turn feature components on or off as needed. Modules are not available for the Catalog tile deployment.
 
-|Modules    |   Resources   |
+|Features    |   Resources   |
 |-----------|-------------|
 |Core     | Resources needed for a multi-zone region infrastructure. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - ALB LBaaS  \n - web VSI + host placement groups  \n - Private LBaaS  \n - App VSI + host placement groups  \n - DB VSI + secondary block volumes + power placement groups  \n - Instance group  \n - VPN  \n - Public Gateway  \n - Public or Private (web LBaaS)|
-|Features   | The optional features for a milti-zone region infrastructure.  You can select as many as you need.     |
 
 ## What is created
 {: #created-vpc-ha-resilient-mzr-modular}
@@ -70,13 +68,12 @@ A VPC is a private space in IBM Cloud where you can run an isolated environment 
 The scripts use variables to specify your account information, VSI server information, Load Balancer information, Auto scale, and Anti-Affinity
 
 The scripts automatically install these software packages:
-{: terraform}
 
 *  PHP
 *  Apache
 *  Maria DB
 *  Word Press Application
-{: terraform}
+
 
 ## Caveats
 {: #limitations-ha-resilient-mzr-modular}
