@@ -43,7 +43,7 @@ Catalog tile and Schematics instructions are both located in the UI tab.
 ## Core features for Terraform and Schematics
 {: #mzr-core-feature-modules}
 
-For Terraform and Schematics deployments, the components in a multi-zone region 3-tier infrastructure are divided into modules so that you can customize your infrastructure to your needs. You receive all of the core components and can turn feature components on or off as needed. Modules are not available for the Catalog tile deployment.
+For Terraform and Schematics deployments, you receive a set of core components.
 
 |Features    |   Resources   |
 |-----------|-------------|
@@ -68,12 +68,13 @@ A VPC is a private space in IBM Cloud where you can run an isolated environment 
 The scripts use variables to specify your account information, VSI server information, Load Balancer information, Auto scale, and Anti-Affinity
 
 The scripts automatically install these software packages:
+{: terraform}
 
 *  PHP
 *  Apache
 *  Maria DB
 *  Word Press Application
-
+{: terraform}
 
 ## Caveats
 {: #limitations-ha-resilient-mzr-modular}

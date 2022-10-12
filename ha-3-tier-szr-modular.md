@@ -64,7 +64,16 @@ A VPC is a private space in IBM Cloud where you can run an isolated environment 
 | Floating IP     |                 01    |  
 | Placement Groups   |              03    |   
 
-The scripts use variables to specify your account information, VSI server information, Load Balancer information, Auto scale, and Anti-Affinity
+The scripts use variables to specify your account information, VSI server information, Load Balancer information, Auto scale, and Anti-Affinity.
+
+The scripts automatically install these software packages:
+{: terraform}
+
+*  PHP
+*  Apache
+*  Maria DB
+*  Word Press Application
+{: terraform}
 
 ## Caveats
 {: #limitations-ha-resilient-saz-modular}
