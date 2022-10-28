@@ -2,7 +2,7 @@
 
 copyright: 
   years:  2022
-lastupdated: "2022-05-13"
+lastupdated: "2022-10-27"
 
 keywords: high availability, HA, resiliency, regions, zones
 
@@ -43,11 +43,12 @@ Catalog tile and Schematics instructions are both located in the UI tab.
 ## Core features for Terraform and Schematics
 {: #mzr-core-feature-modules}
 
-For Terraform and Schematics deployments, you receive a set of core components.
+For Terraform and Schematics deployments, the components in a multi-zone region 3-tier infrastructure are divided into modules so that you can customize your infrastructure to your needs. You receive all of the core components and can turn feature components on or off as needed. Modules are not available for the catalog tile deployment.
 
 |Features    |   Resources   |
 |-----------|-------------|
-|Core     | Resources needed for a multi-zone region infrastructure. All resources are configured.  \n - VPC  \n -  Region  \n - Subnet  \n - Security Group  \n - ALB LBaaS  \n - web VSI + host placement groups  \n - Private LBaaS  \n - App VSI + host placement groups  \n - DB VSI + secondary block volumes + power placement groups  \n - Instance group  \n - VPN  \n - Public Gateway  \n - Public or Private (web LBaaS)|
+|Core     | Resources needed for a multi-zone region infrastructure. All resources are configured.  \n - VPC  \n - Subnet  \n - Security Group  \n - ALB LBaaS  \n - web VSI + host placement groups  \n - Private LBaaS  \n - App VSI + host placement groups  \n - DB VSI + secondary block volumes + power placement groups  \n - Instance group   \n - Public or Private (web LBaaS)|
+| Features  |  The optional features for a multi-zone region infrastructure.  You can select as many as you need.  \n - Autoscale  \n - Cloud Object Storage  \n - Public Gateway  \n - VPN|
 
 ## What is created
 {: #created-vpc-ha-resilient-mzr-modular}
@@ -72,7 +73,7 @@ The scripts automatically install these software packages:
 
 *  PHP
 *  Apache
-*  Maria DB
+*  MariaDB
 *  Word Press Application
 {: terraform}
 
@@ -102,7 +103,7 @@ Don’t delete the bastion server or update its OS image after creation (**Apply
     |Auto scale web VSI parameters | - Min server  \n - Max servers  \n - CPU threshold  |
     |Anti-Affinity VSI parameters  | - App spread strategy  \n - web spread strategy  \n - Db spread strategy |
 
-*   For DBaaS configuration, you modify parameters in two different files, one for required variables and one for optional parameters:  {: terraform}
+*   You can take advantage of Database as a Service (DBaaS) for your infrastructure.  To configure DBaaS, you modify parameters in two different files, one for required variables and one for optional parameters:  {: terraform}
     *   DBaaS information entered in the user inputs file includes:
         - enable_dbaas - true or false, whether to enable DBaaS or use virtual server instance db
         - Admin password - minimum 10 characters, A-Z, a-z, 0-9, password is used for virtual server instance db and DBaaS 
