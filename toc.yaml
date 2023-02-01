@@ -31,7 +31,6 @@ toc:
         - topicgroup:
             label: Deploying highly available architectures with IBM Cloud Console
             topics:
-            - /solution-tutorials/solution-tutorials-highly-available-and-scalable-web-application   
             - ha-autoscale-tutorial.md
             - topicgroup: 
                 label: Create Highly Available applictions in VPC
