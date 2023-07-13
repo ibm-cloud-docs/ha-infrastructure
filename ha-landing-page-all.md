@@ -1,8 +1,8 @@
 ---
 
 copyright: 
-  years:  2021, 2022
-lastupdated: "2022-04-12"
+  years:  2021, 2023
+lastupdated: "2023-07-13"
 
 keywords: high availability, regions, zones, resiliency
 
