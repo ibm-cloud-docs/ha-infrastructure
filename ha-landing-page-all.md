@@ -1,8 +1,8 @@
 ---
 
 copyright: 
-  years:  2021, 2022
-lastupdated: "2022-04-12"
+  years:  2021, 2023
+lastupdated: "2023-07-13"
 
 keywords: high availability, regions, zones, resiliency
 
@@ -33,7 +33,7 @@ subcollection: ha-infrastructure
 High Availability and Resiliency topics are now in the High availability and resiliency for infrastructure repo.  You should update any bookmarks that you have to high availability topics. 
 {: note}
 
-With {{site.data.keyword.cloud}}, you can protect your critical workloads by building resilient highly available infrastructures. Using the backup, disaster recovery, and hhigh availability features, you can minimize your downtime if a severe failure condition happens. You can safeguard your classic or VPC application with multiple availability zones or regions. By creating cloud infrastructures that are protected against a single point of failure, and backing up your data, you keep your workloads and web applications highly available. 
+With {{site.data.keyword.cloud}}, you can protect your critical workloads by building resilient highly available infrastructures. Using the backup, disaster recovery, and high availability features, you can minimize your downtime if a severe failure condition happens. You can safeguard your classic or VPC application with multiple availability zones or regions. By creating cloud infrastructures that are protected against a single point of failure, and backing up your data, you keep your workloads and web applications highly available. 
 {: shortdesc} 
 
 ## What makes a cloud computing infrastructure resilient?
