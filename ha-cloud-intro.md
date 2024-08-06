@@ -25,7 +25,7 @@ This topic is a high-level summary of high availability for stateless applicatio
 
 As an IBM classic infrastructure (non-VPC) customers you can order bare metal or virtual server instances and can deploy to over 60 data centers that are located around the world in addition to several multi-zone regions with multiple availability zones.
 
-The data centers are in different geographies, countries, and regions. Whether the data centers are multi-zone (MZR) or not, all of them maintain multiple power feeds, fiber links, dedicated generators, and battery backup to avoid a single-point-of-failure (SPOF) between zones and regions. While all the data centers have multiple power feeds, several of the more mature sites such as AMS01, DAL05, 06, 08. FRA02. HKG02, MEX01, MIL01, PAR01,SJC01, SNG01, WDC01, and WDC03 have some 1U single socket server chassis that might not accommodate a dual power feed. If you have a 1U single socket server in one of these sites, you might want to consider a 2U chassis with redundant power supplies. For more information about availability zones, see [Locations for resource deployment](/docs/overview?topic=overview-locations).
+The data centers are in different geographies, countries, and regions. Whether the data centers are multi-zone (MZR) or not, all of them maintain multiple power feeds, fiber links, dedicated generators, and battery backup to avoid a single-point-of-failure (SPOF) between zones and regions. While all the data centers have multiple power feeds, several of the more mature sites such as DAL08, FRA02, MIL01, PAR01, SNG01, WDC01, and WDC03 have some 1U single socket server chassis that might not accommodate a dual power feed. If you have a 1U single socket server in one of these sites, you might want to consider a 2U chassis with redundant power supplies. For more information about availability zones, see [Locations for resource deployment](/docs/overview?topic=overview-locations).
 
 The advantage of an MZR is that it provides consistent cloud services across the different zones, better resiliency, availability, higher interconnect speed between data centers for cloud platforms, and infrastructure services such as {{site.data.keyword.cos_full}}, and {{site.data.keyword.Bluemix_notm}} load balancers. These features can be critical to your applications. Deploying the application in an MZR rather than a single zone can increase the availability from 3 9’s to 5 9’s when deployed over three zones.
 
@@ -43,8 +43,6 @@ With {{site.data.keyword.Bluemix_notm}}, you can control the exact compute resou
 For bare metal servers, you can order a server as a single link or redundant link. If the workload doesn’t have any redundancy that is built into its application, it is best to order a redundant link for added link protection.
 
 If your workload already has redundancy built into the application, whether it is through clustering or replication, you might be considering a single link rather than a redundant link to reduce costs. Keep in mind that having a redundant link is still a better option because it eliminates the link as the single point of failure (SPOF) and provides more bandwidth to the server.
-
-Note: Some of the older data centers provide only single link connection. In this case, make sure that your workload has redundancy that is built into the application. SEA01, for example is a single 1G connection. Data centers that support only single 10G connections include AMS01, DAL05/06/07, SJC01, and WDC01.
 
 ### Network interface controller
 
